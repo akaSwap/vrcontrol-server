@@ -66,3 +66,24 @@ func ForceMove(c *gin.Context) {
 		"message": "Player forced to move successfully",
 	})
 }
+
+func ForceAllMove(c *gin.Context) {
+	
+	r := RoomList[c.Param("roomId")]
+	dest, err := strconv.Atoi(c.Param("dest"))
+	if err != nil || dest < 0 {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error": "Invalid destination",
+		})
+		return
+	}
+	r.MoveControl <- sockets.Movement{
+		DestinationStage: dest,
+		Force:            true,
+		Broadcast:        true,
+	}
+	c.JSON(http.StatusOK, gin.H{
+		"message": "All Player forced to move successfully",
+		"dest_chapter": dest,
+	})
+}
