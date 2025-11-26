@@ -20,6 +20,7 @@ type Player struct {
 	InChannel         chan []byte
 	Sequence          int
 	LastUpdate        time.Time
+	Message						string
 	HeadPosition      model.Vector3f
 	HeadForward       model.Vector3f
 	LeftHandPosition  model.Vector3f
@@ -91,12 +92,14 @@ func (p *Player) read() {
 			p.RightHandAvail = heartbeat.RightHandAvail
 			p.Stage = heartbeat.Stage
 			p.DeiviceID = heartbeat.DeviceID
+			p.Message = heartbeat.Message
 			p.LastUpdate = utilities.TicksToDateTime(heartbeat.Timestamp)
 		case model.MessageTypeReadyToMove:
 			readyToMove := playerMessage.ReadyToMove
 			p.Stage = readyToMove.Stage
 			p.DeiviceID = readyToMove.DeviceID
-			p.ReadyToMove = true
+			// p.ReadyToMove = true
+			p.ReadyToMove = readyToMove.Stage > 0
 
 			mov, action := MovementCheck(p.Room, p, p.Stage)
 			if action {
